@@ -55,9 +55,10 @@ def dist_signature(combs, idx, num_sub):
                 exit("ERROR: Unexpected bond length")
     return signature
 
-###
-# Main function
-###
+def check_array(a, b):
+
+    np.array_equal(np.array(a), np.array(b))
+    return
 
 if __name__ == "__main__":
 
@@ -67,8 +68,12 @@ if __name__ == "__main__":
  
     for i in range(len(combs)):
         if combs[i][0] == 0:
-            #dist_mat = build_dist_matrix(combs, i, num_sub)
             sig = dist_signature(combs, i, num_sub)
-            j = i + 2
-            print "sub positions are",combs[i],":"
-            print sig,"\n"
+            count = 0
+            for j in range(len(combs)):
+                if combs[j][0] == 0:
+                    sig1 = dist_signature(combs, j, num_sub)
+                    b = np.array_equal(sig, sig1)
+                    if b == True:
+                        count += 1
+            print combs[i],"degen =",count

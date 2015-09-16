@@ -10,12 +10,12 @@ if len(sys.argv) !=3:
     exit(0)
 
 struc = sys.argv[1]
-num_sub = int(sys.argv[2])
+Nsub = int(sys.argv[2])
 
-def get_combinations(num_pos, num_sub):
+def get_combinations(Npos, Nsub):
 
     combs = []
-    for i in combinations(range(num_pos), num_sub):
+    for i in combinations(range(Npos), Nsub):
         combs.append(i)
     return combs
 
@@ -24,20 +24,20 @@ def get_distance(p1, p2):
     dist = np.sqrt((x[p1]-x[p2])**2 + (y[p1]-y[p2])**2 + (z[p1]-z[p2])**2)
     return dist
 
-def build_dist_matrix(combs, idx, num_sub):
+def build_dist_matrix(combs, idx, Nsub):
 
-    mat = np.zeros((num_sub, num_sub))
-    for i in range(num_sub):
-        for j in range(num_sub):
+    mat = np.zeros((Nsub, Nsub))
+    for i in range(Nsub):
+        for j in range(Nsub):
             BL = get_distance(combs[idx][i], combs[idx][j])
             mat[i][j] = mat[i][j] + BL
     return mat
 
-def dist_signature(combs, idx, num_sub):
+def dist_signature(combs, idx, Nsub):
 
     signature = np.zeros(6)
-    for i in range(num_sub):
-        for j in range(num_sub):
+    for i in range(Nsub):
+        for j in range(Nsub):
             BL = get_distance(combs[idx][i], combs[idx][j])
             if BL == 0.0:
                 signature[0] += 1
@@ -55,25 +55,32 @@ def dist_signature(combs, idx, num_sub):
                 exit("ERROR: Unexpected bond length")
     return signature
 
-def check_array(a, b):
+def get_last_sub(combs, idx, Nsub):
 
-    np.array_equal(np.array(a), np.array(b))
-    return
+    last = Nsub - 1
+    last_pos = combs[idx][last]
+    return last_pos
 
 if __name__ == "__main__":
 
     Natoms, sym, x, y, z = ParseXYZ(struc)
-
-    combs = get_combinations(Natoms, num_sub)
+    combs = get_combinations(Natoms, Nsub)
  
+    degen_mat = np.zeros((Natoms, Natoms))
+
     for i in range(len(combs)):
-        if combs[i][0] == 0:
-            sig = dist_signature(combs, i, num_sub)
+        if combs[i][0] == 0 and combs[i][1] == 1: # As long as I am only looking at the last atom in the combination, the matrix works great. Two options: gneralize this if-statement or the matrix.
+            sig = dist_signature(combs, i, Nsub)
             count = 0
             for j in range(len(combs)):
-                if combs[j][0] == 0:
-                    sig1 = dist_signature(combs, j, num_sub)
+                if combs[j][0] == 0 and combs[j][1] == 1:
+                    sig1 = dist_signature(combs, j, Nsub)
                     b = np.array_equal(sig, sig1)
                     if b == True:
+                        n = get_last_sub(combs, i, Nsub)
+                        m = get_last_sub(combs, j, Nsub)                        
+                        degen_mat[n][m] += 1
+
                         count += 1
-            print combs[i],"degen =",count
+                        print combs[i],"-",combs[j],"degen =",count
+    print degen_mat

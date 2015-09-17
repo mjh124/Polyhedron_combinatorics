@@ -3,10 +3,10 @@
 import sys
 import numpy as np
 from DataFileParser import ParseXYZ
-from itertools import permutations, combinations
+from itertools import combinations
 
 if len(sys.argv) !=3:
-    print "Usage: BuildCuDistMat.py Structure_XYZ number_substitutions"
+    print "Usage: ConnectivitySignature.py Structure_XYZ number_substitutions"
     exit(0)
 
 struc = sys.argv[1]
@@ -61,26 +61,25 @@ def get_last_sub(combs, idx, Nsub):
     last_pos = combs[idx][last]
     return last_pos
 
+def build_degen_matrix(combs, Nsub):
+
+    degen_mat = np.zeros((len(combs), len(combs)))
+    for i in range(len(combs)):
+        sig = dist_signature(combs, i, Nsub)
+        count = 0
+        for j in range(len(combs)):
+            sig1 = dist_signature(combs, j, Nsub)
+            b = np.array_equal(sig, sig1)
+            if b == True:
+                degen_mat[i][j] += 1
+                count += 1
+    return degen_mat
+
 if __name__ == "__main__":
 
     Natoms, sym, x, y, z = ParseXYZ(struc)
     combs = get_combinations(Natoms, Nsub)
  
-    degen_mat = np.zeros((Natoms, Natoms))
-
-    for i in range(len(combs)):
-        if combs[i][0] == 0 and combs[i][1] == 1: # As long as I am only looking at the last atom in the combination, the matrix works great. Two options: gneralize this if-statement or the matrix.
-            sig = dist_signature(combs, i, Nsub)
-            count = 0
-            for j in range(len(combs)):
-                if combs[j][0] == 0 and combs[j][1] == 1:
-                    sig1 = dist_signature(combs, j, Nsub)
-                    b = np.array_equal(sig, sig1)
-                    if b == True:
-                        n = get_last_sub(combs, i, Nsub)
-                        m = get_last_sub(combs, j, Nsub)                        
-                        degen_mat[n][m] += 1
-
-                        count += 1
-                        print combs[i],"-",combs[j],"degen =",count
-    print degen_mat
+    degen_mat = build_degen_matrix(combs, Nsub)
+    degen = degen_mat.sum(axis=0)
+    print degen, len(degen)

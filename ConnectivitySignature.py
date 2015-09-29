@@ -5,7 +5,7 @@ import numpy as np
 from DataFileParser import ParseXYZ
 from itertools import combinations
 
-if len(sys.argv) !=3:
+if len(sys.argv) != 3:
     print "Usage: ConnectivitySignature.py Structure_XYZ number_substitutions"
     exit(0)
 
@@ -75,11 +75,36 @@ def build_degen_matrix(combs, Nsub):
                 count += 1
     return degen_mat
 
+def read_degen_matrix(degen_mat, num_rows):
+
+    skip = []
+    degen = []
+    unique_row = []
+
+    for i in range(num_rows):
+        if i in skip:
+            continue
+        array1 = degen_mat[i,:]
+        unique_row.append(i)
+        degeneracy = 0
+        for j in range(num_rows):
+            array2 = degen_mat[j,:]
+            a = np.array_equal(array1, array2)
+            if a == True:
+                degeneracy += 1
+                skip.append(j)
+        degen.append(degeneracy)
+
+    return unique_row, degen
+
 if __name__ == "__main__":
 
     Natoms, sym, x, y, z = ParseXYZ(struc)
     combs = get_combinations(Natoms, Nsub)
  
     degen_mat = build_degen_matrix(combs, Nsub)
-    degen = degen_mat.sum(axis=0)
-    print degen, len(degen)
+    print degen_mat
+    unique_row, degen = read_degen_matrix(degen_mat, len(combs))
+    print unique_row, degen
+#    degen = degen_mat.sum(axis=0)
+#    print degen, len(degen)

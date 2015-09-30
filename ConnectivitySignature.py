@@ -97,14 +97,21 @@ def read_degen_matrix(degen_mat, num_rows):
 
     return unique_row, degen
 
+def write_summary_file(unique_row, degen):
+
+    fout = str(Nsub) + '_summary.txt'
+    with open(fout, 'w') as f:
+        f.write('# i struc degen\n')
+        for i in range(len(unique_row)):
+            f.write('%d  %d  %d\n' % (i, unique_row[i], degen[i]))
+
 if __name__ == "__main__":
 
     Natoms, sym, x, y, z = ParseXYZ(struc)
     combs = get_combinations(Natoms, Nsub)
  
     degen_mat = build_degen_matrix(combs, Nsub)
-    print degen_mat
+#    print degen_mat
     unique_row, degen = read_degen_matrix(degen_mat, len(combs))
-    print unique_row, degen
-#    degen = degen_mat.sum(axis=0)
-#    print degen, len(degen)
+    write_summary_file(unique_row, degen)
+#    print unique_row, degen

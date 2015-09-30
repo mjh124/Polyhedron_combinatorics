@@ -10,7 +10,7 @@ if len(sys.argv) !=2:
 
 num_pos = int(sys.argv[1])
 
-# Combinations
+# Combinations automatic
 for j in range(num_pos+1):
     count = 0
     for i in combinations(range(num_pos), j):

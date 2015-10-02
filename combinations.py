@@ -17,9 +17,5 @@ for j in range(num_pos+1):
         count += 1
     print num_pos,"choose",j,"=",count
 
-# Permutations
-#for j in range(num_pos+1):
-#    count = 0
-#    for i in permutations(range(num_pos), j):
-#        count += 1
-#    print "Number of permutations for",j," substitutions in",num_pos,"positions =",count
+#for i in combinations(range(num_pos), 4):
+#    print i

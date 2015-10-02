@@ -18,26 +18,48 @@ def nchoosek(pos, sub):
         count += 1
     return count
 
-def get_second_index(index):
+def get_index(index, order):
+
     count = 0
-    decrease_by = nchoosek(10, 1)
-    if index >= nchoosek(11, 2):
-        exit("index is too high!")
     while index >= 0:
-        index -= (decrease_by - count)
-#        print index
-#        print "c=", count
+        index -= nchoosek(Npos-(order+count), Nsub-order)
         if index < 0:
             break
         count += 1
-    skip = Npos - (decrease_by - count) + 1
-    index += (decrease_by - count)
-    third = skip + index
-#    print count
-#    print index*-1
-    return count+2, third
+    index = count + order
+    return index
+
+def get_third_index(index, second):
+
+    start = second-2
+    for i in range(start):
+        index -= nchoosek(Npos-(2+i), Nsub-2)
+
+    third_index = get_index(index, 3)
+
+    return third_index + start
+
+def get_fourth_index(index, second, third):
+
+    # The subtraction of these depend on eachother
+    start = second-2
+    for i in range(start):
+        index -= nchoosek(Npos-(2+i), Nsub-2)
+    start1 = third-3
+    for i in range(start1):
+        index -= nchoosek(Npos-(3+i), Nsub-3)
+
+    fourth_index = get_index(index, 4)
+
+    return fourth_index + start1
 
 if __name__ == "__main__":
 
-    second, third = get_second_index(index)
-    print '1', second, third
+    if index >= nchoosek(Npos-1, Nsub-1):
+        exit("index is too high!")
+
+    second = get_index(index, 2)
+    third = get_third_index(index, second)
+    fourth = get_fourth_index(index, second, third)
+#    print '1', second, third, fourth
+#    print '1', second, third

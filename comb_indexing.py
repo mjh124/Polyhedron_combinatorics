@@ -60,6 +60,6 @@ if __name__ == "__main__":
 
     second = get_index(index, 2)
     third = get_third_index(index, second)
-    fourth = get_fourth_index(index, second, third)
+#    fourth = get_fourth_index(index, second, third)
 #    print '1', second, third, fourth
-#    print '1', second, third
+    print '1', second, third

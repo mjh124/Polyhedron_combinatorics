@@ -105,13 +105,34 @@ def write_summary_file(unique_row, degen):
         for i in range(len(unique_row)):
             f.write('%d  %d  %d\n' % (i, unique_row[i], degen[i]))
 
+def write_summary_file_index(unique_row, degen, Natoms, Nsub):
+
+    fout = str(Nsub) + '_summary.txt'
+    with open(fout, 'w') as f:
+        f.write('# i  degen - indexing')
+        for i in range(len(unique_row)):
+            f.write('\n')
+            combination = idx_2_comb(Natoms, Nsub, unique_row[i])
+            f.write('%d  %d' % (i, degen[i]))
+            for j in range(len(combination)):
+                f.write('  %d' % (combination[j]))
+
+def idx_2_comb(Npos, Nsub, index):
+
+    combs = list(combinations(range(Npos), Nsub))
+    return combs[index]
+
 if __name__ == "__main__":
 
     Natoms, sym, x, y, z = ParseXYZ(struc)
     combs = get_combinations(Natoms, Nsub)
  
     degen_mat = build_degen_matrix(combs, Nsub)
-#    print degen_mat
+
     unique_row, degen = read_degen_matrix(degen_mat, len(combs))
-    write_summary_file(unique_row, degen)
-#    print unique_row, degen
+
+#    for i in range(len(unique_row)):
+#        combination = idx_2_comb(Natoms, Nsub, unique_row[i])
+#        print combination
+
+    write_summary_file_index(unique_row, degen, Natoms, Nsub)
